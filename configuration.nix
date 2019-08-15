@@ -8,13 +8,15 @@ let
   overlays = [
     (self: super: {
       # Seems to have some problem testing on
-      # the build server.
+      # the build server. Sad that we need libjpeg at all...
       libjpeg = pkgs.lib.overrideDerivation super.libjpeg_turbo (attrs: {
         checkPhase = ":";
       });
+      dbus = super.dbus.override {
+        x11Support = false;
+      };
     })
   ];
-
 
   extlinux-conf-builder =
     import (pkgsPath + "/nixos/modules/system/boot/loader/generic-extlinux-compatible/extlinux-conf-builder.nix") {
@@ -32,12 +34,15 @@ in {
     file
   ];
 
+  # TODO: Replace this with the version which supports both fans and temperature sensors.
   boot.kernelPackages = pkgs.linuxPackages_4_19;
 
   services.openssh.enable = true;
   systemd.services.sshd.wantedBy = lib.mkOverride 40 [ "multi-user.target" ];
 
   security.sudo.enable = true;
+  security.polkit.enable = false;
+  security.pam.services.su.forwardXAuth = lib.mkOverride 40 false;
 
   nix.trustedUsers = [ "root" "@wheel" ];
 
