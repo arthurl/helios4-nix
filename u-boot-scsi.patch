@@ -1,0 +1,30 @@
+diff --git a/include/configs/helios4.h b/include/configs/helios4.h
+index 69433781de..a6604fa041 100644
+--- a/include/configs/helios4.h
++++ b/include/configs/helios4.h
+@@ -47,6 +47,7 @@
+ #define CONFIG_SYS_SCSI_MAX_LUN         2
+ #define CONFIG_SYS_SCSI_MAX_DEVICE      (CONFIG_SYS_SCSI_MAX_SCSI_ID * \
+ 					CONFIG_SYS_SCSI_MAX_LUN)
++#define CONFIG_SYS_64BIT_LBA
+ 
+ #ifdef CONFIG_MVEBU_SPL_BOOT_DEVICE_SPI
+ /*
+@@ -158,10 +159,17 @@
+ #define BOOT_TARGET_DEVICES_SATA(func)
+ #endif
+ 
++#ifdef CONFIG_SCSI
++#define BOOT_TARGET_DEVICES_SCSI(func) func(SCSI, scsi, 0)
++#else
++#define BOOT_TARGET_DEVICES_SCSI(func)
++#endif
++
+ #define BOOT_TARGET_DEVICES(func) \
+ 	BOOT_TARGET_DEVICES_MMC(func) \
+ 	BOOT_TARGET_DEVICES_USB(func) \
+ 	BOOT_TARGET_DEVICES_SATA(func) \
++	BOOT_TARGET_DEVICES_SCSI(func) \
+ 	func(PXE, pxe, na) \
+ 	func(DHCP, dhcp, na)
+ 
