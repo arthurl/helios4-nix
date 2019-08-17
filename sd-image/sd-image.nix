@@ -12,7 +12,7 @@ let pkgsPath = import ./pkgs.nix;
     rootfsImage = import (pkgsPath + "/nixos/lib/make-ext4-fs.nix") {
       inherit pkgs storePaths;
       volumeLabel = "NIXOS_SD";
-      inherit (pkgs) e2fsprogs libfaketime perl;
+      inherit (pkgs) e2fsprogs libfaketime perl lkl;
     };
 
     # Packages we want to cross compile to arm

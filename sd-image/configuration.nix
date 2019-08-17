@@ -26,7 +26,7 @@ let
 in {
   imports = [
     (pkgsPath + "/nixos/modules/installer/cd-dvd/sd-image-armv7l-multiplatform.nix")
-    ./helios4.nix
+    ../helios4.nix
   ];
 
   environment.systemPackages = with pkgs; [

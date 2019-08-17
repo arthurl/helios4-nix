@@ -78,4 +78,4 @@ in
 
     LABEL="helios4_hwmon_end"
   '';
-};
+}
