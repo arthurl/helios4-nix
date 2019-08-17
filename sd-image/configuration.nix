@@ -1,10 +1,8 @@
 # To build, use:
 # nix-build nixos -I nixos-config=nixos/modules/installer/cd-dvd/sd-image-armv7l-multiplatform.nix -A config.system.build.sdImage
-{ config, lib, pkgs, ... }:
+{ config, lib, pkgs, modulesPath  , ... }:
 
 let
-  pkgsPath = import ./pkgs.nix;
-
   overlays = [
     (self: super: {
       # Seems to have some problem testing on
@@ -19,14 +17,14 @@ let
   ];
 
   extlinux-conf-builder =
-    import (pkgsPath + "/nixos/modules/system/boot/loader/generic-extlinux-compatible/extlinux-conf-builder.nix") {
+    import (modulesPath + "/system/boot/loader/generic-extlinux-compatible/extlinux-conf-builder.nix") {
       inherit pkgs;
     };
 
 in {
   imports = [
-    (pkgsPath + "/nixos/modules/installer/cd-dvd/sd-image-armv7l-multiplatform.nix")
     ../helios4.nix
+    (modulesPath + "/installer/cd-dvd/sd-image-armv7l-multiplatform.nix")
   ];
 
   environment.systemPackages = with pkgs; [
