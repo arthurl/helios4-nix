@@ -1,5 +1,5 @@
-let pkgsRev = "444f22ca892a873f76acd88d5d55bdc24ed08757";
-    pkgsSHA256 = "0v99nrlrb9ljnajf5y78gil6whpgjjacrfzslk0xfs85gn91zxvf";
+let pkgsRev = "4a08e95238996b1e7afc4a1491ac3f0a5181f597";
+    pkgsSHA256 = "062n0hqfmnmn39zakmbb4lbx4h5yk7nbzh7l75j6rggpmq7130hf";
 in builtins.fetchTarball {
   url = "https://github.com/NixOS/nixpkgs/archive/${pkgsRev}.tar.gz";
   sha256 = pkgsSHA256;
