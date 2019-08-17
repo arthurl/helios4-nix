@@ -34,8 +34,7 @@ in {
     file
   ];
 
-  # TODO: Replace this with the version which supports both fans and temperature sensors.
-  boot.kernelPackages = pkgs.linuxPackages_4_19;
+  boot.kernelPackages = import ./helios4-kernelPackages.nix { inherit pkgs; };
 
   services.openssh.enable = true;
   systemd.services.sshd.wantedBy = lib.mkOverride 40 [ "multi-user.target" ];
