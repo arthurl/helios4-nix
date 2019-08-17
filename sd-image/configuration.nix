@@ -26,6 +26,7 @@ let
 in {
   imports = [
     (pkgsPath + "/nixos/modules/installer/cd-dvd/sd-image-armv7l-multiplatform.nix")
+    ./helios4.nix
   ];
 
   environment.systemPackages = with pkgs; [
@@ -33,8 +34,6 @@ in {
     tmux
     file
   ];
-
-  boot.kernelPackages = import ./helios4-kernelPackages.nix { inherit pkgs; };
 
   services.openssh.enable = true;
   systemd.services.sshd.wantedBy = lib.mkOverride 40 [ "multi-user.target" ];
