@@ -16,10 +16,9 @@ let pkgsPath = import ./pkgs.nix;
     };
 
     # Packages we want to cross compile to arm
-    crossPkgs = import pkgsPath {
-      crossSystem = {
-        system = "armv7l-linux";
-      };
+    crossPkgs = import pkgs.path {
+      crossSystem = { system="armv7l-linux"; };
+      system="x86_64-linux";
     };
 
     # u-boot

@@ -8,7 +8,7 @@ let
 in
 
 {
-  require = [
+  imports = [
   ];
 
   # Build the kernel on on x86-64
