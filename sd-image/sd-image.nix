@@ -30,9 +30,8 @@ let pkgsPath = import ./pkgs.nix;
         extraMeta.platforms = [ "armv7l-linux" ];
         filesToInstall = [ "u-boot-spl.kwb" ];
         src = pkgs.fetchFromGitHub {
-          owner = "helios-4";
-          # repo = "u-boot";
-          repo = "u-boot-marvell";
+          owner = "expipiplus1";
+          repo = "u-boot";
           rev = "3221f0f219f343a38b5f84dc839cc825a6f863f0";
           sha256 = "1fgld3fb0xf1l9kf534qsvddya8bbcwqz475x8gcxpvz16b1kwpa";
         };
