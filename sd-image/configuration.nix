@@ -13,6 +13,9 @@ let
       dbus = super.dbus.override {
         x11Support = false;
       };
+      rng-tools = super.rng-tools.override {
+        withPkcs11 = false;
+      };
     })
   ];
 
@@ -25,6 +28,7 @@ in {
   imports = [
     ../helios4.nix
     (modulesPath + "/installer/cd-dvd/sd-image-armv7l-multiplatform.nix")
+    (modulesPath + "/profiles/minimal.nix")
   ];
 
   environment.systemPackages = with pkgs; [
@@ -37,8 +41,11 @@ in {
   systemd.services.sshd.wantedBy = lib.mkOverride 40 [ "multi-user.target" ];
 
   security.sudo.enable = true;
+
+  # Making things small
   security.polkit.enable = false;
   security.pam.services.su.forwardXAuth = lib.mkOverride 40 false;
+  fonts.fontconfig.enable = false;
 
   nix.trustedUsers = [ "root" "@wheel" ];
 
