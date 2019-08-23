@@ -54,10 +54,10 @@ let pkgsPath = import ./pkgs.nix;
       inherit pkgs;
     };
 
-    image = pkgs.stdenv.mkDerivation rec {
+    image = crossPkgs.stdenv.mkDerivation rec {
       name = "helios-4-sd.img";
 
-      buildInputs = with pkgs; [
+      nativeBuildInputs = with pkgs; [
         dosfstools
         e2fsprogs
         libfaketime
