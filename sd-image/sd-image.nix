@@ -9,10 +9,9 @@ let pkgsPath = import ./pkgs.nix;
     storePaths = [ config.system.build.toplevel ];
 
     # The ext4 root partition
-    rootfsImage = import (pkgsPath + "/nixos/lib/make-ext4-fs.nix") {
-      inherit pkgs storePaths;
+    rootfsImage = crossPkgs.callPackage (pkgsPath + "/nixos/lib/make-ext4-fs.nix") {
+      inherit storePaths;
       volumeLabel = "NIXOS_SD";
-      inherit (pkgs) e2fsprogs libfaketime perl lkl;
     };
 
     # Packages we want to cross compile to arm
@@ -50,13 +49,13 @@ let pkgsPath = import ./pkgs.nix;
     u-boot-image = u-boot + "/u-boot-spl.kwb";
 
     extlinux-conf-builder = import (pkgsPath + "/nixos/modules/system/boot/loader/generic-extlinux-compatible/extlinux-conf-builder.nix") {
-      inherit pkgs;
+      pkgs = crossPkgs;
     };
 
-    image = crossPkgs.stdenv.mkDerivation rec {
+    image = crossPkgs.callPackage ({stdenv, dosfstools, e2fsprogs, libfaketime, mtools, utillinux}: stdenv.mkDerivation rec {
       name = "helios-4-sd.img";
 
-      nativeBuildInputs = with pkgs; [
+      nativeBuildInputs = [
         dosfstools
         e2fsprogs
         libfaketime
@@ -112,7 +111,7 @@ let pkgsPath = import ./pkgs.nix;
         eval $(partx $out -o START,SECTORS --nr 2 --pairs)
         dd conv=notrunc if=${rootfsImage} of=$out seek=$START count=$SECTORS
       '';
-    };
+    }) {};
 
 in {
   inherit storePaths u-boot image;
