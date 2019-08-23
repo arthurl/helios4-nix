@@ -64,6 +64,8 @@ in {
     ];
   };
 
+  boot.supportedFilesystems = lib.mkForce [ "btrfs" "reiserfs" "vfat" "f2fs" "xfs" "ntfs" "cifs" "ext4" "vfat" ];
+
   boot.postBootCommands = ''
   # On the first boot do some maintenance tasks
   if [ -f /nix-path-registration ]; then
