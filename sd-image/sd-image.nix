@@ -49,7 +49,7 @@ let pkgsPath = import ./pkgs.nix;
     u-boot-image = u-boot + "/u-boot-spl.kwb";
 
     extlinux-conf-builder = import (pkgsPath + "/nixos/modules/system/boot/loader/generic-extlinux-compatible/extlinux-conf-builder.nix") {
-      pkgs = crossPkgs;
+      pkgs = crossPkgs.buildPackages;
     };
 
     image = crossPkgs.callPackage ({stdenv, dosfstools, e2fsprogs, libfaketime, mtools, utillinux}: stdenv.mkDerivation rec {
