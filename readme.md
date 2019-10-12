@@ -39,7 +39,7 @@ NIX_PATH=nixpkgs=/mnt/etc/nixpkgs/ nixos-install
 ```
 
 Oops, we forgot to make a boot partition
-```
+```sh
 # Shrink the disk by 500MB
 mount /dev/sda1 /mnt
 btrfs filesystem resize -500m /mnt
@@ -53,4 +53,14 @@ sgdisk --new 0:0:-400M /dev/sda
 sgdisk --largest-new 0 /dev/sda
 # This is the bootable attribute
 sgdisk --attributes 2:set:2 /dev/sda
+```
+
+U-Boot's preference is to boot from the SD card, so to prevent this (hence
+getting it to boot from the HDD) we should move `extlinux.conf` on the SD
+card's boot partition.
+
+```sh
+mount /dev/mmcblk0p1 /mnt
+mv /mnt/extlinux/extlinux.conf /mnt/extlinux/not-extlinux.conf/
+umount /mnt
 ```
