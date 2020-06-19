@@ -22,7 +22,7 @@ in
           ];
           defconfig = "mvebu_v7_defconfig";
           structuredExtraConfig =
-            with import (pkgs.path + "/lib/kernel.nix") { inherit lib; version = null; };
+            with import (pkgs.path + "/lib/kernel.nix") { inherit lib; };
             { DRM = no; };
         };
     in  recurseIntoAttrs (linuxPackagesFor linux_helios4);
