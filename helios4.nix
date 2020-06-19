@@ -43,8 +43,8 @@ in
           # Temp source : /dev/thermal-board
           INTERVAL=10
           FCTEMPS=/dev/fan-j10/pwm1=/dev/thermal-board/temp1_input /dev/fan-j17/pwm1=/dev/thermal-board/temp1_input
-          MINTEMP=/dev/fan-j10/pwm1=45  /dev/fan-j17/pwm1=45
-          MAXTEMP=/dev/fan-j10/pwm1=70  /dev/fan-j17/pwm1=70
+          MINTEMP=/dev/fan-j10/pwm1=35  /dev/fan-j17/pwm1=35
+          MAXTEMP=/dev/fan-j10/pwm1=60  /dev/fan-j17/pwm1=60
           MINSTART=/dev/fan-j10/pwm1=20 /dev/fan-j17/pwm1=20
           MINSTOP=/dev/fan-j10/pwm1=29  /dev/fan-j17/pwm1=29
           MINPWM=0
