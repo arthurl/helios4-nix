@@ -15,10 +15,11 @@ in
   # A patch is included to get both PWM fans working
   boot.kernelPackages = lib.mkForce (
     with crossPkgs;
-    let linux_helios4 = linux_4_19.override {
+    let linux_helios4 = linux_5_4.override {
           kernelPatches = [
             kernelPatches.bridge_stp_helper
-            kernelPatches.modinst_arg_list_too_long
+            kernelPatches.request_key_helper
+            kernelPatches.export_kernel_fpu_functions."5.3"
             {name = "helios4-fan"; patch = ./patches/helios4-fan.patch;}
           ];
           defconfig = "mvebu_v7_defconfig";
