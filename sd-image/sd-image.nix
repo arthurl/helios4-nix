@@ -25,6 +25,7 @@ let pkgsPath = import ./pkgs.nix;
     # - Support for BTRFS turned on in the config
     # - SCSI support for large devices turned on in a patch file.
     u-boot = crossPkgs.buildUBoot rec {
+        name = "u-boot";
         defconfig = "helios4_defconfig";
         extraMeta.platforms = [ "armv7l-linux" ];
         filesToInstall = [ "u-boot-spl.kwb" ];
