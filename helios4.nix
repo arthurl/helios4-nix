@@ -15,7 +15,7 @@ in
   # A patch is included to get both PWM fans working
   boot.kernelPackages = lib.mkForce (
     with crossPkgs;
-    let linux_helios4 = linux_5_7.override {
+    let linux_helios4 = linux_5_4.override {
           kernelPatches = [
             kernelPatches.bridge_stp_helper
             kernelPatches.request_key_helper
