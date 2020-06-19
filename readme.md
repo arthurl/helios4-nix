@@ -1,5 +1,7 @@
 ## Initial setup
 
+This is written for this repo at tag `build-sd`
+
 This sets up a machine with two disks using btrfs. This will clear anything
 already on the disks!
 
