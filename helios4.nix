@@ -42,14 +42,14 @@ in
       ExecStart =
         let conf = pkgs.writeText "fancontrol.conf" ''
           # Helios4 PWM Fan Control Configuration
-          # Temp source : /dev/thermal-board
+          # Temp source : /dev/thermal-cpu
           INTERVAL=10
-          FCTEMPS=/dev/fan-j10/pwm1=/dev/thermal-board/temp1_input /dev/fan-j17/pwm1=/dev/thermal-board/temp1_input
-          MINTEMP=/dev/fan-j10/pwm1=35  /dev/fan-j17/pwm1=35
-          MAXTEMP=/dev/fan-j10/pwm1=60  /dev/fan-j17/pwm1=60
+          FCTEMPS=/dev/fan-j10/pwm1=/dev/thermal-cpu/temp1_input /dev/fan-j17/pwm1=/dev/thermal-cpu/temp1_input
+          MINTEMP=/dev/fan-j10/pwm1=40 /dev/fan-j17/pwm1=40
+          MAXTEMP=/dev/fan-j10/pwm1=80 /dev/fan-j17/pwm1=80
           MINSTART=/dev/fan-j10/pwm1=20 /dev/fan-j17/pwm1=20
-          MINSTOP=/dev/fan-j10/pwm1=29  /dev/fan-j17/pwm1=29
-          MINPWM=0
+          MINSTOP=/dev/fan-j10/pwm1=29 /dev/fan-j17/pwm1=29
+          MINPWM=20
         '';
         in "${pkgs.lm_sensors}/sbin/fancontrol ${conf}";
     };
@@ -71,6 +71,7 @@ in
     #
     ATTR{name}=="f1072004mdiomii00", ENV{IS_HELIOS4_HWMON}="1", ENV{HELIOS4_SYMLINK}="/dev/thermal-eth"
     ATTR{name}=="armada_thermal", ENV{IS_HELIOS4_HWMON}="1", ENV{HELIOS4_SYMLINK}="/dev/thermal-cpu"
+    ATTR{name}=="f10e4078.thermal", ENV{IS_HELIOS4_HWMON}="1", ENV{HELIOS4_SYMLINK}="/dev/thermal-cpu"
     #
     ENV{IS_HELIOS4_HWMON}=="1", ATTR{name}=="lm75", ENV{HELIOS4_SYMLINK}="/dev/thermal-board"
     ENV{_IS_HELIOS4_FAN_}=="1", ENV{HELIOS4_SYMLINK}="/dev/fan-$env{_HELIOS4_FAN_}"
