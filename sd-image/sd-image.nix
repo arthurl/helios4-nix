@@ -8,6 +8,8 @@ let pkgsPath = import ./pkgs.nix;
     # All store paths that will be present on the root partition
     storePaths = [ config.system.build.toplevel ];
 
+    kernel = config.system.build.kernel;
+
     # The ext4 root partition
     rootfsImage = crossPkgs.callPackage (pkgsPath + "/nixos/lib/make-ext4-fs.nix") {
       inherit storePaths;
@@ -115,5 +117,5 @@ let pkgsPath = import ./pkgs.nix;
     }) {};
 
 in {
-  inherit storePaths u-boot image;
+  inherit storePaths u-boot image kernel;
 }

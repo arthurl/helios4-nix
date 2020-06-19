@@ -1,4 +1,4 @@
-{ config, pkgs, ... }:
+{ config, pkgs, lib, ... }:
 let
   crossPkgs = import pkgs.path {
     crossSystem = { system="armv7l-linux"; };
@@ -13,7 +13,8 @@ in
 
   # Build the kernel on on x86-64
   # A patch is included to get both PWM fans working
-  boot.kernelPackages = with crossPkgs;
+  boot.kernelPackages = lib.mkForce (
+    with crossPkgs;
     let linux_helios4 = linux_4_19.override {
           kernelPatches = [
             kernelPatches.bridge_stp_helper
@@ -25,7 +26,7 @@ in
             with import (pkgs.path + "/lib/kernel.nix") { inherit lib; };
             { DRM = no; };
         };
-    in  recurseIntoAttrs (linuxPackagesFor linux_helios4);
+    in  recurseIntoAttrs (linuxPackagesFor linux_helios4));
 
   boot.initrd.availableKernelModules = [ "ahci_mvebu" ];
 
