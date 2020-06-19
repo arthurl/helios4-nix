@@ -49,7 +49,7 @@ in
           MAXTEMP=/dev/fan-j10/pwm1=80 /dev/fan-j17/pwm1=80
           MINSTART=/dev/fan-j10/pwm1=20 /dev/fan-j17/pwm1=20
           MINSTOP=/dev/fan-j10/pwm1=29 /dev/fan-j17/pwm1=29
-          MINPWM=20
+          MINPWM=0
         '';
         in "${pkgs.lm_sensors}/sbin/fancontrol ${conf}";
     };
