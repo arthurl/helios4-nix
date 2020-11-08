@@ -42,9 +42,13 @@ NIX_PATH=nixpkgs=/mnt/etc/nixpkgs/ nixos-install
 
 Oops, we forgot to make a boot partition
 ```sh
-# Shrink the disk by 500MB
+# Set devid to the device id of /dev/sda1 (find with: btrfs filesystem show /mnt)
+devid=...
+
+# Shrink the disk by 500MB, can be any number larger than how much we'll shrink
+# the partition by later
 mount /dev/sda1 /mnt
-btrfs filesystem resize -500m /mnt
+btrfs filesystem resize $devid:-500m /mnt
 umount /dev/sda1
 
 # Delete the partition and make it again, 400MB smaller
@@ -55,7 +59,13 @@ sgdisk --new 0:0:-400M /dev/sda
 sgdisk --largest-new 0 /dev/sda
 # This is the bootable attribute
 sgdisk --attributes 2:set:2 /dev/sda
+
+# Don't forget to resize the btrfs partition to fill the space
+btrfs filesystem resize $devid:max /mnt
 ```
+
+
+## Booting to the new system
 
 U-Boot's preference is to boot from the SD card, so to prevent this (hence
 getting it to boot from the HDD) we should move `extlinux.conf` on the SD
