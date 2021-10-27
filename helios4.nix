@@ -19,7 +19,6 @@ in
           kernelPatches = [
             kernelPatches.bridge_stp_helper
             kernelPatches.request_key_helper
-            kernelPatches.export_kernel_fpu_functions."5.3"
             {name = "helios4-fan"; patch = ./patches/helios4-fan.patch;}
           ];
           defconfig = "mvebu_v7_defconfig";
