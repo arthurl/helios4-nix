@@ -1,5 +1,5 @@
 diff --git a/drivers/gpio/gpio-mvebu.c b/drivers/gpio/gpio-mvebu.c
-index 6c068769434..0a30109acf1 100644
+index 89a053b1d279..abb60117687f 100644
 --- a/drivers/gpio/gpio-mvebu.c
 +++ b/drivers/gpio/gpio-mvebu.c
 @@ -93,20 +93,41 @@
@@ -160,7 +160,7 @@ index 6c068769434..0a30109acf1 100644
  }
  
  static void mvebu_pwm_get_state(struct pwm_chip *chip,
-@@ -650,17 +713,24 @@ static void mvebu_pwm_get_state(struct pwm_chip *chip,
+@@ -650,16 +713,23 @@ static void mvebu_pwm_get_state(struct pwm_chip *chip,
  				struct pwm_state *state) {
  
  	struct mvebu_pwm *mvpwm = to_mvebu_pwm(chip);
@@ -179,28 +179,27 @@ index 6c068769434..0a30109acf1 100644
 +
 +	spin_lock_irqsave(&controller->lock, flags);
  
- 	val = (unsigned long long)
--		readl_relaxed(mvebu_pwmreg_blink_on_duration(mvpwm));
-+		readl_relaxed(mvebu_pwmreg_blink_on_duration(controller));
- 	val *= NSEC_PER_SEC;
+-	u = readl_relaxed(mvebu_pwmreg_blink_on_duration(mvpwm));
++	u = readl_relaxed(mvebu_pwmreg_blink_on_duration(controller));
+ 	val = (unsigned long long) u * NSEC_PER_SEC;
 -	do_div(val, mvpwm->clk_rate);
 +	do_div(val, controller->clk_rate);
  	if (val > UINT_MAX)
  		state->duty_cycle = UINT_MAX;
  	else if (val)
 @@ -669,9 +739,9 @@ static void mvebu_pwm_get_state(struct pwm_chip *chip,
- 		state->duty_cycle = 1;
  
- 	val = (unsigned long long)
--		readl_relaxed(mvebu_pwmreg_blink_off_duration(mvpwm));
-+		readl_relaxed(mvebu_pwmreg_blink_off_duration(controller));
+ 	val = (unsigned long long) u; /* on duration */
+ 	/* period = on + off duration */
+-	val += readl_relaxed(mvebu_pwmreg_blink_off_duration(mvpwm));
++	val += readl_relaxed(mvebu_pwmreg_blink_off_duration(controller));
  	val *= NSEC_PER_SEC;
 -	do_div(val, mvpwm->clk_rate);
 +	do_div(val, controller->clk_rate);
- 	if (val < state->duty_cycle) {
- 		state->period = 1;
- 	} else {
-@@ -690,19 +760,21 @@ static void mvebu_pwm_get_state(struct pwm_chip *chip,
+ 	if (val > UINT_MAX)
+ 		state->period = UINT_MAX;
+ 	else if (val)
+@@ -685,19 +755,21 @@ static void mvebu_pwm_get_state(struct pwm_chip *chip,
  	else
  		state->enabled = false;
  
@@ -224,7 +223,7 @@ index 6c068769434..0a30109acf1 100644
  	do_div(val, NSEC_PER_SEC);
  	if (val > UINT_MAX)
  		return -EINVAL;
-@@ -711,7 +783,7 @@ static int mvebu_pwm_apply(struct pwm_chip *chip, struct pwm_device *pwm,
+@@ -706,7 +778,7 @@ static int mvebu_pwm_apply(struct pwm_chip *chip, struct pwm_device *pwm,
  	else
  		on = 1;
  
@@ -233,7 +232,7 @@ index 6c068769434..0a30109acf1 100644
  		(state->period - state->duty_cycle);
  	do_div(val, NSEC_PER_SEC);
  	if (val > UINT_MAX)
-@@ -721,16 +793,16 @@ static int mvebu_pwm_apply(struct pwm_chip *chip, struct pwm_device *pwm,
+@@ -716,16 +788,16 @@ static int mvebu_pwm_apply(struct pwm_chip *chip, struct pwm_device *pwm,
  	else
  		off = 1;
  
@@ -254,7 +253,7 @@ index 6c068769434..0a30109acf1 100644
  
  	return 0;
  }
-@@ -749,10 +821,10 @@ static void __maybe_unused mvebu_pwm_suspend(struct mvebu_gpio_chip *mvchip)
+@@ -744,10 +816,10 @@ static void __maybe_unused mvebu_pwm_suspend(struct mvebu_gpio_chip *mvchip)
  
  	regmap_read(mvchip->regs, GPIO_BLINK_CNT_SELECT_OFF + mvchip->offset,
  		    &mvpwm->blink_select);
@@ -269,7 +268,7 @@ index 6c068769434..0a30109acf1 100644
  }
  
  static void __maybe_unused mvebu_pwm_resume(struct mvebu_gpio_chip *mvchip)
-@@ -761,10 +833,10 @@ static void __maybe_unused mvebu_pwm_resume(struct mvebu_gpio_chip *mvchip)
+@@ -756,10 +828,10 @@ static void __maybe_unused mvebu_pwm_resume(struct mvebu_gpio_chip *mvchip)
  
  	regmap_write(mvchip->regs, GPIO_BLINK_CNT_SELECT_OFF + mvchip->offset,
  		     mvpwm->blink_select);
@@ -284,7 +283,7 @@ index 6c068769434..0a30109acf1 100644
  }
  
  static int mvebu_pwm_probe(struct platform_device *pdev,
-@@ -775,6 +847,7 @@ static int mvebu_pwm_probe(struct platform_device *pdev,
+@@ -770,6 +842,7 @@ static int mvebu_pwm_probe(struct platform_device *pdev,
  	struct mvebu_pwm *mvpwm;
  	struct resource *res;
  	u32 set;
@@ -292,7 +291,7 @@ index 6c068769434..0a30109acf1 100644
  
  	if (!of_device_is_compatible(mvchip->chip.of_node,
  				     "marvell,armada-370-gpio"))
-@@ -797,12 +870,15 @@ static int mvebu_pwm_probe(struct platform_device *pdev,
+@@ -792,12 +865,15 @@ static int mvebu_pwm_probe(struct platform_device *pdev,
  	 * Use set A for lines of GPIO chip with id 0, B for GPIO chip
  	 * with id 1. Don't allow further GPIO chips to be used for PWM.
  	 */
@@ -311,7 +310,7 @@ index 6c068769434..0a30109acf1 100644
  	regmap_write(mvchip->regs,
  		     GPIO_BLINK_CNT_SELECT_OFF + mvchip->offset, set);
  
-@@ -812,15 +888,13 @@ static int mvebu_pwm_probe(struct platform_device *pdev,
+@@ -807,15 +883,13 @@ static int mvebu_pwm_probe(struct platform_device *pdev,
  	mvchip->mvpwm = mvpwm;
  	mvpwm->mvchip = mvchip;
  
@@ -332,7 +331,7 @@ index 6c068769434..0a30109acf1 100644
  
  	mvpwm->chip.dev = dev;
  	mvpwm->chip.ops = &mvebu_pwm_ops;
-@@ -833,7 +907,9 @@ static int mvebu_pwm_probe(struct platform_device *pdev,
+@@ -828,7 +902,9 @@ static int mvebu_pwm_probe(struct platform_device *pdev,
  	 */
  	mvpwm->chip.base = -1;
  
