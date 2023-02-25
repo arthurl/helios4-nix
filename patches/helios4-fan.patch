@@ -1,5 +1,5 @@
 diff --git a/drivers/gpio/gpio-mvebu.c b/drivers/gpio/gpio-mvebu.c
-index ed7c5fc47f52..c5a9f0bf5c0c 100644
+index 2ab34a8e6..039c6575d 100644
 --- a/drivers/gpio/gpio-mvebu.c
 +++ b/drivers/gpio/gpio-mvebu.c
 @@ -92,20 +92,41 @@
@@ -199,7 +199,7 @@ index ed7c5fc47f52..c5a9f0bf5c0c 100644
  	if (val > UINT_MAX)
  		state->period = UINT_MAX;
  	else if (val)
-@@ -688,19 +758,21 @@ static void mvebu_pwm_get_state(struct pwm_chip *chip,
+@@ -688,13 +758,15 @@ static void mvebu_pwm_get_state(struct pwm_chip *chip,
  	else
  		state->enabled = false;
  
@@ -216,14 +216,16 @@ index ed7c5fc47f52..c5a9f0bf5c0c 100644
  	struct mvebu_gpio_chip *mvchip = mvpwm->mvchip;
  	unsigned long long val;
  	unsigned long flags;
- 	unsigned int on, off;
+@@ -703,7 +775,7 @@ static int mvebu_pwm_apply(struct pwm_chip *chip, struct pwm_device *pwm,
+ 	if (state->polarity != PWM_POLARITY_NORMAL)
+ 		return -EINVAL;
  
 -	val = (unsigned long long) mvpwm->clk_rate * state->duty_cycle;
 +	val = (unsigned long long) controller->clk_rate * state->duty_cycle;
  	do_div(val, NSEC_PER_SEC);
  	if (val > UINT_MAX)
  		return -EINVAL;
-@@ -709,7 +781,7 @@ static int mvebu_pwm_apply(struct pwm_chip *chip, struct pwm_device *pwm,
+@@ -712,7 +784,7 @@ static int mvebu_pwm_apply(struct pwm_chip *chip, struct pwm_device *pwm,
  	else
  		on = 1;
  
@@ -232,7 +234,7 @@ index ed7c5fc47f52..c5a9f0bf5c0c 100644
  		(state->period - state->duty_cycle);
  	do_div(val, NSEC_PER_SEC);
  	if (val > UINT_MAX)
-@@ -719,16 +791,16 @@ static int mvebu_pwm_apply(struct pwm_chip *chip, struct pwm_device *pwm,
+@@ -722,16 +794,16 @@ static int mvebu_pwm_apply(struct pwm_chip *chip, struct pwm_device *pwm,
  	else
  		off = 1;
  
@@ -253,7 +255,7 @@ index ed7c5fc47f52..c5a9f0bf5c0c 100644
  
  	return 0;
  }
-@@ -747,10 +819,10 @@ static void __maybe_unused mvebu_pwm_suspend(struct mvebu_gpio_chip *mvchip)
+@@ -750,10 +822,10 @@ static void __maybe_unused mvebu_pwm_suspend(struct mvebu_gpio_chip *mvchip)
  
  	regmap_read(mvchip->regs, GPIO_BLINK_CNT_SELECT_OFF + mvchip->offset,
  		    &mvpwm->blink_select);
@@ -268,7 +270,7 @@ index ed7c5fc47f52..c5a9f0bf5c0c 100644
  }
  
  static void __maybe_unused mvebu_pwm_resume(struct mvebu_gpio_chip *mvchip)
-@@ -759,10 +831,10 @@ static void __maybe_unused mvebu_pwm_resume(struct mvebu_gpio_chip *mvchip)
+@@ -762,10 +834,10 @@ static void __maybe_unused mvebu_pwm_resume(struct mvebu_gpio_chip *mvchip)
  
  	regmap_write(mvchip->regs, GPIO_BLINK_CNT_SELECT_OFF + mvchip->offset,
  		     mvpwm->blink_select);
@@ -283,7 +285,7 @@ index ed7c5fc47f52..c5a9f0bf5c0c 100644
  }
  
  static int mvebu_pwm_probe(struct platform_device *pdev,
-@@ -772,6 +844,7 @@ static int mvebu_pwm_probe(struct platform_device *pdev,
+@@ -775,6 +847,7 @@ static int mvebu_pwm_probe(struct platform_device *pdev,
  	struct device *dev = &pdev->dev;
  	struct mvebu_pwm *mvpwm;
  	u32 set;
@@ -291,7 +293,7 @@ index ed7c5fc47f52..c5a9f0bf5c0c 100644
  
  	if (!of_device_is_compatible(mvchip->chip.of_node,
  				     "marvell,armada-370-gpio"))
-@@ -793,12 +866,15 @@ static int mvebu_pwm_probe(struct platform_device *pdev,
+@@ -796,12 +869,15 @@ static int mvebu_pwm_probe(struct platform_device *pdev,
  	 * Use set A for lines of GPIO chip with id 0, B for GPIO chip
  	 * with id 1. Don't allow further GPIO chips to be used for PWM.
  	 */
@@ -310,7 +312,7 @@ index ed7c5fc47f52..c5a9f0bf5c0c 100644
  	regmap_write(mvchip->regs,
  		     GPIO_BLINK_CNT_SELECT_OFF + mvchip->offset, set);
  
-@@ -808,15 +884,13 @@ static int mvebu_pwm_probe(struct platform_device *pdev,
+@@ -811,15 +887,13 @@ static int mvebu_pwm_probe(struct platform_device *pdev,
  	mvchip->mvpwm = mvpwm;
  	mvpwm->mvchip = mvchip;
  
@@ -331,7 +333,7 @@ index ed7c5fc47f52..c5a9f0bf5c0c 100644
  
  	mvpwm->chip.dev = dev;
  	mvpwm->chip.ops = &mvebu_pwm_ops;
-@@ -829,7 +903,9 @@ static int mvebu_pwm_probe(struct platform_device *pdev,
+@@ -832,7 +906,9 @@ static int mvebu_pwm_probe(struct platform_device *pdev,
  	 */
  	mvpwm->chip.base = -1;
  
@@ -342,3 +344,5 @@ index ed7c5fc47f52..c5a9f0bf5c0c 100644
  
  	return pwmchip_add(&mvpwm->chip);
  }
+-- 
+2.38.3
